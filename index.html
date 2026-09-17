@@ -9,278 +9,103 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/extended.css" />
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="brand-mark">CH</div>
-        <div>
-          <strong>CondoHub</strong>
-          <span>Gestión residencial</span>
-        </div>
-      </div>
-
+      <div class="brand"><div class="brand-mark">CH</div><div><strong>CondoHub</strong><span>Gestión residencial</span></div></div>
       <div class="property-selector">
         <span class="eyebrow">Condominio actual</span>
-        <button class="property-button" type="button">
-          <span>
-            <strong>Residencial Central</strong>
-            <small>Jesús María · Lima</small>
-          </span>
-          <span aria-hidden="true">⌄</span>
-        </button>
+        <button class="property-button" type="button"><span><strong>Residencial Central</strong><small>Jesús María · Lima</small></span><span>⌄</span></button>
       </div>
-
-      <nav class="nav-menu" aria-label="Navegación principal">
-        <button class="nav-item active" data-view="dashboard"><span>⌂</span> Dashboard</button>
-        <button class="nav-item" data-view="cuenta"><span>▤</span> Estado de cuenta</button>
-        <button class="nav-item" data-view="pagos"><span>✓</span> Pagos</button>
-        <button class="nav-item" data-view="reservas"><span>▦</span> Reservas</button>
-        <button class="nav-item" data-view="visitas"><span>♙</span> Visitas</button>
-        <button class="nav-item" data-view="incidencias"><span>!</span> Incidencias</button>
-        <button class="nav-item" data-view="comunicados"><span>◉</span> Comunicados</button>
+      <div class="role-switcher">
+        <label for="roleSelect">Vista del prototipo</label>
+        <select id="roleSelect">
+          <option value="propietario">Propietario</option>
+          <option value="inquilino">Inquilino</option>
+          <option value="administrador">Administrador</option>
+          <option value="supervisor">Supervisor</option>
+          <option value="junta">Junta Directiva</option>
+        </select>
+      </div>
+      <nav class="nav-menu" id="navMenu" aria-label="Navegación principal">
+        <button class="nav-item active" data-view="dashboard" data-roles="all"><span>⌂</span> Dashboard</button>
+        <button class="nav-item" data-view="cuenta" data-roles="propietario inquilino administrador supervisor junta"><span>▤</span> Estado de cuenta</button>
+        <button class="nav-item" data-view="pagos" data-roles="propietario inquilino administrador supervisor"><span>✓</span> Pagos</button>
+        <button class="nav-item" data-view="reservas" data-roles="propietario inquilino administrador supervisor"><span>▦</span> Reservas</button>
+        <button class="nav-item" data-view="visitas" data-roles="propietario inquilino administrador supervisor"><span>♙</span> Visitas</button>
+        <button class="nav-item" data-view="incidencias" data-roles="propietario inquilino administrador supervisor junta"><span>!</span> Incidencias</button>
+        <button class="nav-item" data-view="comunicados" data-roles="all"><span>◉</span> Comunicados</button>
+        <button class="nav-item admin-only" data-view="estructura" data-roles="administrador supervisor"><span>▦</span> Condominios y unidades</button>
+        <button class="nav-item admin-only" data-view="usuarios" data-roles="administrador supervisor"><span>♟</span> Usuarios y perfiles</button>
+        <button class="nav-item admin-only" data-view="cargos" data-roles="administrador supervisor"><span>S/</span> Cargos y multas</button>
+        <button class="nav-item" data-view="documentos" data-roles="propietario inquilino administrador supervisor junta"><span>▣</span> Documentos</button>
+        <button class="nav-item admin-only" data-view="reportes" data-roles="administrador supervisor junta"><span>▥</span> Reportes</button>
+        <button class="nav-item admin-only" data-view="auditoria" data-roles="administrador"><span>◎</span> Auditoría</button>
       </nav>
-
-      <div class="sidebar-footer">
-        <div class="profile-card">
-          <div class="avatar">CA</div>
-          <div>
-            <strong>Carlos A.</strong>
-            <small>Propietario · Dpto. 704</small>
-          </div>
-          <button class="icon-button" aria-label="Opciones de usuario">⋮</button>
-        </div>
-      </div>
+      <div class="sidebar-footer"><div class="profile-card"><div class="avatar" id="avatar">CA</div><div><strong id="profileName">Carlos A.</strong><small id="profileRole">Propietario · Dpto. 704</small></div><button class="icon-button">⋮</button></div></div>
     </aside>
 
     <main class="main-content">
       <header class="topbar">
-        <div class="topbar-left">
-          <button class="mobile-menu" id="mobileMenu" aria-label="Abrir menú">☰</button>
-          <div>
-            <span class="eyebrow">Mi residencia</span>
-            <h1 id="pageTitle">Dashboard</h1>
-          </div>
-        </div>
-        <div class="topbar-actions">
-          <button class="icon-button notification-button" aria-label="Notificaciones">♢<span class="notification-dot"></span></button>
-          <button class="primary-button" data-action="nuevo-pago">+ Registrar pago</button>
-        </div>
+        <div class="topbar-left"><button class="mobile-menu" id="mobileMenu">☰</button><div><span class="eyebrow" id="contextLabel">Mi residencia</span><h1 id="pageTitle">Dashboard</h1></div></div>
+        <div class="topbar-actions"><button class="icon-button notification-button" id="notificationButton">♢<span class="notification-dot"></span></button><button class="primary-button" id="contextAction">+ Registrar pago</button></div>
       </header>
 
       <section class="view active" id="dashboard">
-        <div class="welcome-panel">
-          <div>
-            <span class="eyebrow">Resumen del departamento 704</span>
-            <h2>Hola, Carlos. Todo bajo control.</h2>
-            <p>Revisa tus próximos vencimientos, reservas y novedades del condominio.</p>
-          </div>
-          <div class="status-pill success">● Al día</div>
+        <div class="welcome-panel" id="residentWelcome">
+          <div><span class="eyebrow">Resumen del departamento 704</span><h2>Hola, Carlos. Todo bajo control.</h2><p>Revisa vencimientos, reservas, visitas y novedades del condominio.</p></div><div class="status-pill success">● Al día</div>
         </div>
-
-        <div class="stats-grid">
-          <article class="stat-card accent">
-            <div class="stat-icon">S/</div>
-            <div>
-              <span>Saldo pendiente</span>
-              <strong>S/ 385.00</strong>
-              <small>Vence el 25 de septiembre</small>
-            </div>
-          </article>
-          <article class="stat-card">
-            <div class="stat-icon">▦</div>
-            <div>
-              <span>Próxima reserva</span>
-              <strong>Sala Cowork</strong>
-              <small>20 sep · 7:00 p. m.</small>
-            </div>
-          </article>
-          <article class="stat-card">
-            <div class="stat-icon">♙</div>
-            <div>
-              <span>Visitas autorizadas</span>
-              <strong>3</strong>
-              <small>2 pendientes hoy</small>
-            </div>
-          </article>
-          <article class="stat-card">
-            <div class="stat-icon">!</div>
-            <div>
-              <span>Incidencias abiertas</span>
-              <strong>1</strong>
-              <small>En atención</small>
-            </div>
-          </article>
+        <div class="welcome-panel admin-welcome hidden" id="adminWelcome">
+          <div><span class="eyebrow">Panel operativo</span><h2>Residencial Central</h2><p>Seguimiento consolidado de cobranza, reservas, incidencias y validaciones pendientes.</p></div><div class="status-pill success">● Operación estable</div>
         </div>
-
+        <div class="stats-grid" id="residentStats">
+          <article class="stat-card accent"><div class="stat-icon">S/</div><div><span>Saldo pendiente</span><strong>S/ 385.00</strong><small>Vence el 25 de septiembre</small></div></article>
+          <article class="stat-card"><div class="stat-icon">▦</div><div><span>Próxima reserva</span><strong>Sala Cowork</strong><small>20 sep · 7:00 p. m.</small></div></article>
+          <article class="stat-card"><div class="stat-icon">♙</div><div><span>Visitas autorizadas</span><strong>3</strong><small>2 pendientes hoy</small></div></article>
+          <article class="stat-card"><div class="stat-icon">!</div><div><span>Incidencias abiertas</span><strong>1</strong><small>En atención</small></div></article>
+        </div>
+        <div class="stats-grid hidden" id="adminStats">
+          <article class="stat-card accent"><div class="stat-icon">S/</div><div><span>Recaudación del mes</span><strong>S/ 84,620</strong><small>87% de lo programado</small></div></article>
+          <article class="stat-card"><div class="stat-icon">⌛</div><div><span>Pagos por validar</span><strong>18</strong><small>S/ 9,430 en revisión</small></div></article>
+          <article class="stat-card"><div class="stat-icon">!</div><div><span>Incidencias abiertas</span><strong>12</strong><small>3 de prioridad alta</small></div></article>
+          <article class="stat-card"><div class="stat-icon">▦</div><div><span>Reservas esta semana</span><strong>41</strong><small>68% de ocupación</small></div></article>
+        </div>
         <div class="content-grid two-columns">
-          <article class="panel">
-            <div class="panel-heading">
-              <div>
-                <span class="eyebrow">Finanzas</span>
-                <h3>Estado de cuenta</h3>
-              </div>
-              <button class="text-button" data-view-target="cuenta">Ver detalle →</button>
-            </div>
-            <div class="account-summary">
-              <div class="donut" style="--progress: 72"><span>72%</span></div>
-              <div>
-                <strong>S/ 1,420.00</strong>
-                <span>Pagado este mes</span>
-                <div class="legend-row"><span><i class="legend paid"></i>Pagado</span><span><i class="legend pending"></i>Pendiente</span></div>
-              </div>
-            </div>
-            <div class="mini-table">
-              <div class="mini-row header"><span>Concepto</span><span>Vencimiento</span><span>Estado</span><span>Monto</span></div>
-              <div class="mini-row"><span>Mantenimiento septiembre</span><span>25 sep</span><span class="badge warning">Pendiente</span><strong>S/ 320.00</strong></div>
-              <div class="mini-row"><span>Fondo extraordinario</span><span>25 sep</span><span class="badge warning">Pendiente</span><strong>S/ 65.00</strong></div>
-            </div>
-          </article>
-
-          <article class="panel">
-            <div class="panel-heading">
-              <div>
-                <span class="eyebrow">Agenda</span>
-                <h3>Próximas actividades</h3>
-              </div>
-              <button class="text-button" data-view-target="reservas">Ver reservas →</button>
-            </div>
-            <div class="timeline">
-              <div class="timeline-item">
-                <div class="date-box"><strong>20</strong><span>SEP</span></div>
-                <div><strong>Sala Cowork</strong><span>19:00 – 21:00 · Confirmada</span></div>
-                <span class="badge success">Confirmada</span>
-              </div>
-              <div class="timeline-item">
-                <div class="date-box"><strong>23</strong><span>SEP</span></div>
-                <div><strong>Mantenimiento de ascensores</strong><span>09:00 – 13:00 · Torre A</span></div>
-                <span class="badge neutral">Aviso</span>
-              </div>
-              <div class="timeline-item">
-                <div class="date-box"><strong>28</strong><span>SEP</span></div>
-                <div><strong>Reunión de propietarios</strong><span>18:30 · Sala SUM</span></div>
-                <span class="badge info">Evento</span>
-              </div>
-            </div>
-          </article>
+          <article class="panel"><div class="panel-heading"><div><span class="eyebrow">Finanzas</span><h3 id="financePanelTitle">Estado de cuenta</h3></div><button class="text-button" data-view-target="cuenta">Ver detalle →</button></div><div class="account-summary"><div class="donut" style="--progress:72"><span>72%</span></div><div><strong id="financeAmount">S/ 1,420.00</strong><span id="financeCaption">Pagado este mes</span><div class="legend-row"><span><i class="legend paid"></i>Pagado</span><span><i class="legend pending"></i>Pendiente</span></div></div></div><div class="mini-table"><div class="mini-row header"><span>Concepto</span><span>Fecha</span><span>Estado</span><span>Monto</span></div><div class="mini-row"><span>Mantenimiento septiembre</span><span>25 sep</span><span class="badge warning">Pendiente</span><strong>S/ 320</strong></div><div class="mini-row"><span>Fondo extraordinario</span><span>25 sep</span><span class="badge warning">Pendiente</span><strong>S/ 65</strong></div></div></article>
+          <article class="panel"><div class="panel-heading"><div><span class="eyebrow">Agenda</span><h3>Próximas actividades</h3></div><button class="text-button" data-view-target="reservas">Ver reservas →</button></div><div class="timeline"><div class="timeline-item"><div class="date-box"><strong>20</strong><span>SEP</span></div><div><strong>Sala Cowork</strong><span>19:00 – 21:00</span></div><span class="badge success">Confirmada</span></div><div class="timeline-item"><div class="date-box"><strong>23</strong><span>SEP</span></div><div><strong>Mantenimiento de ascensores</strong><span>09:00 – 13:00</span></div><span class="badge neutral">Aviso</span></div><div class="timeline-item"><div class="date-box"><strong>28</strong><span>SEP</span></div><div><strong>Reunión de propietarios</strong><span>18:30 · SUM</span></div><span class="badge info">Evento</span></div></div></article>
         </div>
-
-        <div class="content-grid two-columns lower-grid">
-          <article class="panel">
-            <div class="panel-heading">
-              <div><span class="eyebrow">Comunicaciones</span><h3>Últimos comunicados</h3></div>
-              <button class="text-button" data-view-target="comunicados">Ver todos →</button>
-            </div>
-            <div class="news-list">
-              <div class="news-item"><div class="news-icon">i</div><div><strong>Corte programado de agua</strong><span>Hoy · Administración</span><p>El servicio será suspendido de 10:00 a 13:00 por trabajos preventivos.</p></div></div>
-              <div class="news-item"><div class="news-icon">✓</div><div><strong>Nuevas reglas para reservas</strong><span>Ayer · Administración</span><p>Desde octubre se actualizarán los tiempos máximos de uso de las áreas comunes.</p></div></div>
-            </div>
-          </article>
-
-          <article class="panel quick-actions-panel">
-            <div class="panel-heading"><div><span class="eyebrow">Accesos rápidos</span><h3>¿Qué necesitas hacer?</h3></div></div>
-            <div class="quick-actions">
-              <button data-view-target="pagos"><span>✓</span><strong>Registrar pago</strong><small>Adjunta tu comprobante</small></button>
-              <button data-view-target="reservas"><span>▦</span><strong>Reservar ambiente</strong><small>Consulta disponibilidad</small></button>
-              <button data-view-target="visitas"><span>♙</span><strong>Autorizar visita</strong><small>Registra un invitado</small></button>
-              <button data-view-target="incidencias"><span>!</span><strong>Reportar incidencia</strong><small>Solicita atención</small></button>
-            </div>
-          </article>
-        </div>
+        <div class="content-grid two-columns lower-grid"><article class="panel"><div class="panel-heading"><div><span class="eyebrow">Comunicaciones</span><h3>Últimos comunicados</h3></div><button class="text-button" data-view-target="comunicados">Ver todos →</button></div><div class="news-list"><div class="news-item"><div class="news-icon">i</div><div><strong>Corte programado de agua</strong><span>Hoy · Administración</span><p>Suspensión de 10:00 a 13:00 por trabajos preventivos.</p></div></div><div class="news-item"><div class="news-icon">✓</div><div><strong>Nuevas reglas para reservas</strong><span>Ayer · Administración</span><p>Desde octubre cambian los tiempos máximos de uso.</p></div></div></div></article><article class="panel"><div class="panel-heading"><div><span class="eyebrow">Accesos rápidos</span><h3>Acciones frecuentes</h3></div></div><div class="quick-actions" id="quickActions"><button data-view-target="pagos"><span>✓</span><strong>Registrar pago</strong><small>Adjunta tu comprobante</small></button><button data-view-target="reservas"><span>▦</span><strong>Reservar ambiente</strong><small>Consulta disponibilidad</small></button><button data-view-target="visitas"><span>♙</span><strong>Autorizar visita</strong><small>Registra un invitado</small></button><button data-view-target="incidencias"><span>!</span><strong>Reportar incidencia</strong><small>Solicita atención</small></button></div></article></div>
       </section>
 
-      <section class="view" id="cuenta">
-        <div class="section-toolbar">
-          <div><span class="eyebrow">Finanzas</span><h2>Estado de cuenta</h2><p>Consulta cargos, pagos y movimientos asociados a tu unidad.</p></div>
-          <button class="secondary-button">Descargar estado de cuenta</button>
-        </div>
-        <div class="stats-grid compact">
-          <article class="stat-card"><div><span>Saldo total</span><strong>S/ 385.00</strong><small>2 conceptos pendientes</small></div></article>
-          <article class="stat-card"><div><span>Pagado en 2026</span><strong>S/ 8,420.00</strong><small>18 movimientos</small></div></article>
-          <article class="stat-card"><div><span>Último pago</span><strong>S/ 320.00</strong><small>25 ago 2026</small></div></article>
-        </div>
-        <article class="panel table-panel">
-          <div class="panel-heading"><div><h3>Movimientos recientes</h3></div><div class="filters"><button class="filter active">Todos</button><button class="filter">Pendientes</button><button class="filter">Pagados</button></div></div>
-          <div class="data-table">
-            <div class="data-row data-header"><span>Periodo</span><span>Concepto</span><span>Vencimiento</span><span>Estado</span><span>Monto</span></div>
-            <div class="data-row"><span>Sep 2026</span><span>Mantenimiento</span><span>25 sep</span><span><i class="badge warning">Pendiente</i></span><strong>S/ 320.00</strong></div>
-            <div class="data-row"><span>Sep 2026</span><span>Fondo extraordinario</span><span>25 sep</span><span><i class="badge warning">Pendiente</i></span><strong>S/ 65.00</strong></div>
-            <div class="data-row"><span>Ago 2026</span><span>Mantenimiento</span><span>25 ago</span><span><i class="badge success">Pagado</i></span><strong>S/ 320.00</strong></div>
-            <div class="data-row"><span>Jul 2026</span><span>Mantenimiento</span><span>25 jul</span><span><i class="badge success">Pagado</i></span><strong>S/ 320.00</strong></div>
-          </div>
-        </article>
-      </section>
+      <section class="view" id="cuenta"><div class="section-toolbar"><div><span class="eyebrow">Finanzas</span><h2>Estado de cuenta</h2><p>Recibos, cargos, pagos y movimientos históricos por unidad.</p></div><button class="secondary-button prototype-action">Descargar estado</button></div><div class="stats-grid compact"><article class="stat-card"><div><span>Saldo total</span><strong>S/ 385</strong><small>2 conceptos pendientes</small></div></article><article class="stat-card"><div><span>Pagado en 2026</span><strong>S/ 8,420</strong><small>18 movimientos</small></div></article><article class="stat-card"><div><span>Último pago</span><strong>S/ 320</strong><small>25 ago 2026</small></div></article></div><article class="panel table-panel"><div class="panel-heading"><h3>Movimientos</h3><div class="filters"><button class="filter active">Todos</button><button class="filter">Pendientes</button><button class="filter">Pagados</button></div></div><div class="data-table"><div class="data-row data-header"><span>Periodo</span><span>Concepto</span><span>Vencimiento</span><span>Estado</span><span>Monto</span></div><div class="data-row"><span>Sep 2026</span><span>Mantenimiento</span><span>25 sep</span><span><i class="badge warning">Pendiente</i></span><strong>S/ 320</strong></div><div class="data-row"><span>Sep 2026</span><span>Fondo extraordinario</span><span>25 sep</span><span><i class="badge warning">Pendiente</i></span><strong>S/ 65</strong></div><div class="data-row"><span>Ago 2026</span><span>Mantenimiento</span><span>25 ago</span><span><i class="badge success">Pagado</i></span><strong>S/ 320</strong></div></div></article></section>
 
-      <section class="view" id="pagos">
-        <div class="section-toolbar">
-          <div><span class="eyebrow">Finanzas</span><h2>Mis pagos</h2><p>Registra comprobantes y revisa su estado de validación.</p></div>
-          <button class="primary-button" data-action="nuevo-pago">+ Registrar pago</button>
-        </div>
-        <div class="cards-list">
-          <article class="payment-card"><div class="payment-icon">✓</div><div class="payment-main"><div><strong>Mantenimiento agosto</strong><span>Operación 45872196 · 25 ago 2026</span></div><span class="badge success">Validado</span></div><strong>S/ 320.00</strong></article>
-          <article class="payment-card"><div class="payment-icon pending">⌛</div><div class="payment-main"><div><strong>Reserva Sala Cowork</strong><span>Operación 46102451 · 17 sep 2026</span></div><span class="badge warning">En revisión</span></div><strong>S/ 40.00</strong></article>
-        </div>
-      </section>
+      <section class="view" id="pagos"><div class="section-toolbar"><div><span class="eyebrow">Finanzas</span><h2>Pagos y evidencias</h2><p>Registro de comprobantes y flujo de validación administrativa.</p></div><button class="primary-button" data-modal="pago">+ Registrar pago</button></div><div class="cards-list"><article class="payment-card"><div class="payment-icon">✓</div><div class="payment-main"><div><strong>Mantenimiento agosto</strong><span>Operación 45872196 · 25 ago 2026</span></div><span class="badge success">Validado</span></div><strong>S/ 320</strong></article><article class="payment-card"><div class="payment-icon pending">⌛</div><div class="payment-main"><div><strong>Mantenimiento septiembre</strong><span>Operación 46102451 · evidencia adjunta</span></div><span class="badge warning">En revisión</span></div><div class="row-actions admin-action"><button class="mini-action approve">Validar</button><button class="mini-action reject">Observar</button></div></article></div></section>
 
-      <section class="view" id="reservas">
-        <div class="section-toolbar">
-          <div><span class="eyebrow">Áreas comunes</span><h2>Reservas</h2><p>Consulta disponibilidad y administra tus reservas.</p></div>
-          <button class="primary-button" id="newReservation">+ Nueva reserva</button>
-        </div>
-        <div class="amenities-grid">
-          <article class="amenity-card"><div class="amenity-visual cowork">CO</div><div><span class="badge success">Disponible hoy</span><h3>Sala Cowork</h3><p>Capacidad 10 personas · S/ 20/hora</p><button class="secondary-button reserve-btn" data-space="Sala Cowork">Reservar</button></div></article>
-          <article class="amenity-card"><div class="amenity-visual sum">SUM</div><div><span class="badge info">Fin de semana</span><h3>Sala SUM</h3><p>Capacidad 50 personas · S/ 120/turno</p><button class="secondary-button reserve-btn" data-space="Sala SUM">Reservar</button></div></article>
-          <article class="amenity-card"><div class="amenity-visual kids">KIDS</div><div><span class="badge success">Disponible hoy</span><h3>Sala de niños</h3><p>Capacidad 15 niños · Sin costo</p><button class="secondary-button reserve-btn" data-space="Sala de niños">Reservar</button></div></article>
-        </div>
-      </section>
+      <section class="view" id="reservas"><div class="section-toolbar"><div><span class="eyebrow">Áreas comunes</span><h2>Reservas</h2><p>Disponibilidad, reglas, costos, aforo y reservas históricas.</p></div><button class="primary-button" data-modal="reserva">+ Nueva reserva</button></div><div class="amenities-grid"><article class="amenity-card"><div class="amenity-visual cowork">CO</div><div><span class="badge success">Disponible hoy</span><h3>Sala Cowork</h3><p>10 personas · S/ 20/h · máximo 3 h</p><button class="secondary-button reserve-btn" data-space="Sala Cowork">Reservar</button></div></article><article class="amenity-card"><div class="amenity-visual sum">SUM</div><div><span class="badge info">Requiere aprobación</span><h3>Sala SUM</h3><p>50 personas · S/ 120/turno · 7 días anticipación</p><button class="secondary-button reserve-btn" data-space="Sala SUM">Reservar</button></div></article><article class="amenity-card"><div class="amenity-visual kids">KIDS</div><div><span class="badge success">Disponible hoy</span><h3>Sala de niños</h3><p>15 niños · sin costo · máximo 2 h</p><button class="secondary-button reserve-btn" data-space="Sala de niños">Reservar</button></div></article></div></section>
 
-      <section class="view" id="visitas">
-        <div class="section-toolbar"><div><span class="eyebrow">Accesos</span><h2>Visitas</h2><p>Autoriza y consulta visitas asociadas a tu departamento.</p></div><button class="primary-button" id="newVisit">+ Autorizar visita</button></div>
-        <article class="panel">
-          <div class="data-table visits-table">
-            <div class="data-row data-header"><span>Invitado</span><span>Fecha</span><span>Horario</span><span>Tipo</span><span>Estado</span></div>
-            <div class="data-row"><span><strong>Andrea Torres</strong><small>DNI ****1842</small></span><span>17 sep</span><span>18:00 – 22:00</span><span>Única</span><span><i class="badge success">Autorizada</i></span></div>
-            <div class="data-row"><span><strong>José Ramírez</strong><small>DNI ****6241</small></span><span>18–30 sep</span><span>08:00 – 20:00</span><span>Recurrente</span><span><i class="badge info">Vigente</i></span></div>
-          </div>
-        </article>
-      </section>
+      <section class="view" id="visitas"><div class="section-toolbar"><div><span class="eyebrow">Accesos</span><h2>Invitados y visitas</h2><p>Autorizaciones únicas o recurrentes con vigencia y horario.</p></div><button class="primary-button" data-modal="visita">+ Autorizar visita</button></div><article class="panel"><div class="data-table visits-table"><div class="data-row data-header"><span>Invitado</span><span>Fecha</span><span>Horario</span><span>Tipo</span><span>Estado</span></div><div class="data-row"><span><strong>Andrea Torres</strong><small>DNI ****1842</small></span><span>17 sep</span><span>18:00–22:00</span><span>Única</span><span><i class="badge success">Autorizada</i></span></div><div class="data-row"><span><strong>José Ramírez</strong><small>DNI ****6241</small></span><span>18–30 sep</span><span>08:00–20:00</span><span>Recurrente</span><span><i class="badge info">Vigente</i></span></div></div></article></section>
 
-      <section class="view" id="incidencias">
-        <div class="section-toolbar"><div><span class="eyebrow">Atención</span><h2>Incidencias y solicitudes</h2><p>Registra y consulta solicitudes relacionadas con tu unidad o áreas comunes.</p></div><button class="primary-button" id="newIssue">+ Nueva incidencia</button></div>
-        <div class="ticket-grid">
-          <article class="ticket-card"><div class="ticket-top"><span class="badge warning">En atención</span><span>#INC-1042</span></div><h3>Filtración en estacionamiento B2</h3><p>Se observa humedad continua cerca de la plaza 42.</p><div class="ticket-footer"><span>Creado: 15 sep</span><span>Responsable: Mantenimiento</span></div></article>
-          <article class="ticket-card"><div class="ticket-top"><span class="badge success">Resuelto</span><span>#INC-1031</span></div><h3>Luz de pasadizo</h3><p>Luminaria del piso 7 reemplazada correctamente.</p><div class="ticket-footer"><span>Creado: 08 sep</span><span>Cerrado: 09 sep</span></div></article>
-        </div>
-      </section>
+      <section class="view" id="incidencias"><div class="section-toolbar"><div><span class="eyebrow">Atención</span><h2>Incidencias y solicitudes</h2><p>Categoría, prioridad, responsable, comentarios y trazabilidad.</p></div><button class="primary-button" data-modal="incidencia">+ Nueva incidencia</button></div><div class="ticket-grid"><article class="ticket-card"><div class="ticket-top"><span class="badge warning">En atención</span><span>#INC-1042</span></div><h3>Filtración en estacionamiento B2</h3><p>Humedad continua cerca de la plaza 42.</p><div class="ticket-footer"><span>Prioridad: Alta</span><span>Responsable: Mantenimiento</span></div></article><article class="ticket-card"><div class="ticket-top"><span class="badge success">Resuelto</span><span>#INC-1031</span></div><h3>Luz de pasadizo</h3><p>Luminaria del piso 7 reemplazada.</p><div class="ticket-footer"><span>Prioridad: Media</span><span>Cerrado: 09 sep</span></div></article></div></section>
 
-      <section class="view" id="comunicados">
-        <div class="section-toolbar"><div><span class="eyebrow">Novedades</span><h2>Comunicados</h2><p>Mantente informado sobre actividades y avisos del condominio.</p></div></div>
-        <div class="announcement-grid">
-          <article class="announcement-card featured"><span>HOY</span><h3>Corte programado de agua</h3><p>Por mantenimiento preventivo de cisternas, el servicio de agua será suspendido de 10:00 a 13:00.</p><small>Administración · 17 sep 2026</small></article>
-          <article class="announcement-card"><span>GESTIÓN</span><h3>Nuevas reglas para reservas</h3><p>A partir de octubre se aplicarán nuevos tiempos máximos y anticipación mínima para reservar ambientes.</p><small>Administración · 16 sep 2026</small></article>
-          <article class="announcement-card"><span>SEGURIDAD</span><h3>Actualización de protocolo de visitas</h3><p>Se reforzará la validación de identidad de proveedores e invitados en recepción.</p><small>Seguridad · 14 sep 2026</small></article>
-        </div>
-      </section>
+      <section class="view" id="comunicados"><div class="section-toolbar"><div><span class="eyebrow">Comunicaciones</span><h2>Comunicados y notificaciones</h2><p>Publicaciones segmentadas y avisos por eventos relevantes.</p></div><button class="primary-button admin-action prototype-action">+ Publicar comunicado</button></div><div class="announcement-grid"><article class="announcement-card featured"><span>HOY</span><h3>Corte programado de agua</h3><p>Servicio suspendido de 10:00 a 13:00 por mantenimiento preventivo.</p><small>Administración · Todo el condominio</small></article><article class="announcement-card"><span>GESTIÓN</span><h3>Nuevas reglas para reservas</h3><p>Desde octubre se actualizan anticipación y tiempos máximos.</p><small>Administración · Propietarios e inquilinos</small></article><article class="announcement-card"><span>SEGURIDAD</span><h3>Protocolo de visitas</h3><p>Se reforzará la validación de identidad en recepción.</p><small>Seguridad · Todos</small></article></div></section>
+
+      <section class="view" id="estructura"><div class="section-toolbar"><div><span class="eyebrow">Administración</span><h2>Condominios, edificios y unidades</h2><p>Jerarquía: condominio → torre → piso → unidad → residentes.</p></div><button class="primary-button prototype-action">+ Nueva unidad</button></div><div class="structure-layout"><article class="panel tree-panel"><h3>Residencial Central</h3><div class="tree"><button class="tree-node active">▾ Torre A <span>48 unidades</span></button><button class="tree-child">Piso 7 <span>6 unidades</span></button><button class="tree-leaf selected">Dpto. 704 <span>Ocupado</span></button><button class="tree-child">Piso 8 <span>6 unidades</span></button><button class="tree-node">▸ Torre B <span>52 unidades</span></button></div></article><article class="panel"><div class="panel-heading"><div><span class="eyebrow">Unidad seleccionada</span><h3>Departamento 704</h3></div><span class="badge success">Activo</span></div><div class="detail-grid"><div><span>Propietario</span><strong>Carlos A.</strong></div><div><span>Área</span><strong>86 m²</strong></div><div><span>Estacionamiento</span><strong>B2-42</strong></div><div><span>Residentes</span><strong>2</strong></div></div><h4>Relaciones</h4><div class="resident-row"><div class="avatar">CA</div><div><strong>Carlos A.</strong><small>Propietario</small></div><span class="badge success">Vigente</span></div><div class="resident-row"><div class="avatar">NA</div><div><strong>Nicole A.</strong><small>Residente</small></div><span class="badge success">Vigente</span></div></article></div></section>
+
+      <section class="view" id="usuarios"><div class="section-toolbar"><div><span class="eyebrow">Seguridad funcional</span><h2>Usuarios y perfiles</h2><p>Roles configurables y restricciones por condominio, edificio o unidad.</p></div><button class="primary-button prototype-action">+ Nuevo usuario</button></div><article class="panel"><div class="data-table users-table"><div class="data-row data-header"><span>Usuario</span><span>Perfil</span><span>Ámbito</span><span>Estado</span><span>Acción</span></div><div class="data-row"><span><strong>María Rojas</strong><small>mrojas@demo.pe</small></span><span>Administrador</span><span>Residencial Central</span><span><i class="badge success">Activo</i></span><button class="text-button prototype-action">Editar</button></div><div class="data-row"><span><strong>Luis Vega</strong><small>lvega@demo.pe</small></span><span>Supervisor</span><span>Torre A</span><span><i class="badge success">Activo</i></span><button class="text-button prototype-action">Editar</button></div><div class="data-row"><span><strong>Carlos A.</strong><small>Propietario</small></span><span>Propietario</span><span>Dpto. 704</span><span><i class="badge success">Activo</i></span><button class="text-button prototype-action">Ver</button></div></div></article></section>
+
+      <section class="view" id="cargos"><div class="section-toolbar"><div><span class="eyebrow">Finanzas</span><h2>Cargos, multas y penalidades</h2><p>Conceptos adicionales asociados a unidades y reflejados en el estado de cuenta.</p></div><button class="primary-button prototype-action">+ Registrar cargo</button></div><article class="panel"><div class="data-table"><div class="data-row data-header"><span>Unidad</span><span>Concepto</span><span>Fecha</span><span>Estado</span><span>Monto</span></div><div class="data-row"><span>704</span><span>Fondo extraordinario</span><span>01 sep</span><span><i class="badge warning">Pendiente</i></span><strong>S/ 65</strong></div><div class="data-row"><span>1203</span><span>Penalidad por reserva</span><span>12 sep</span><span><i class="badge warning">Pendiente</i></span><strong>S/ 80</strong></div><div class="data-row"><span>504</span><span>Multa reglamento</span><span>10 sep</span><span><i class="badge success">Pagado</i></span><strong>S/ 150</strong></div></div></article></section>
+
+      <section class="view" id="documentos"><div class="section-toolbar"><div><span class="eyebrow">Repositorio</span><h2>Documentos del condominio</h2><p>Reglamentos, actas, políticas, manuales y formatos según perfil.</p></div><button class="primary-button admin-action prototype-action">+ Subir documento</button></div><div class="document-grid"><article class="document-card"><div class="doc-icon">PDF</div><div><strong>Reglamento interno</strong><span>Actualizado 05 sep 2026 · 2.4 MB</span></div><button class="secondary-button prototype-action">Ver</button></article><article class="document-card"><div class="doc-icon">PDF</div><div><strong>Acta Junta Agosto</strong><span>31 ago 2026 · Solo propietarios</span></div><button class="secondary-button prototype-action">Ver</button></article><article class="document-card"><div class="doc-icon">DOC</div><div><strong>Formato de mudanza</strong><span>Editable · Todos los residentes</span></div><button class="secondary-button prototype-action">Descargar</button></article></div></section>
+
+      <section class="view" id="reportes"><div class="section-toolbar"><div><span class="eyebrow">Gestión</span><h2>Reportes y panel de control</h2><p>Indicadores operativos respetando el ámbito y permisos del usuario.</p></div><button class="secondary-button prototype-action">Exportar reporte</button></div><div class="stats-grid compact"><article class="stat-card"><div><span>Morosidad</span><strong>13%</strong><small>14 unidades</small></div></article><article class="stat-card"><div><span>Recaudación</span><strong>87%</strong><small>S/ 84,620</small></div></article><article class="stat-card"><div><span>Ocupación áreas</span><strong>68%</strong><small>Semana actual</small></div></article></div><div class="content-grid two-columns"><article class="panel"><h3>Recaudación mensual</h3><div class="bar-chart"><div style="--v:72"><span>May</span></div><div style="--v:81"><span>Jun</span></div><div style="--v:78"><span>Jul</span></div><div style="--v:90"><span>Ago</span></div><div style="--v:87"><span>Sep</span></div></div></article><article class="panel"><h3>Incidencias por estado</h3><div class="metric-list"><div><span>Abiertas</span><strong>12</strong></div><div><span>En atención</span><strong>8</strong></div><div><span>Resueltas este mes</span><strong>34</strong></div></div></article></div></section>
+
+      <section class="view" id="auditoria"><div class="section-toolbar"><div><span class="eyebrow">Trazabilidad</span><h2>Auditoría</h2><p>Usuario, fecha, acción y principales valores modificados.</p></div></div><article class="panel"><div class="audit-list"><div class="audit-item"><span class="audit-dot"></span><div><strong>Pago validado · Dpto. 704</strong><p>María Rojas validó operación 46102451.</p><small>17 sep 2026 · 11:42</small></div></div><div class="audit-item"><span class="audit-dot"></span><div><strong>Reserva actualizada · Sala SUM</strong><p>Luis Vega aprobó reserva RES-2094.</p><small>17 sep 2026 · 10:18</small></div></div><div class="audit-item"><span class="audit-dot"></span><div><strong>Usuario actualizado</strong><p>Se modificó el ámbito del supervisor a Torre A.</p><small>16 sep 2026 · 17:22</small></div></div></div></article></section>
     </main>
   </div>
 
-  <div class="modal-backdrop" id="modalBackdrop" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <button class="modal-close" id="modalClose" aria-label="Cerrar">×</button>
-      <span class="eyebrow">Prototipo interactivo</span>
-      <h2 id="modalTitle">Registrar pago</h2>
-      <p id="modalDescription">Completa los datos para simular esta operación.</p>
-      <form id="modalForm">
-        <label>Concepto<select><option>Mantenimiento septiembre</option><option>Fondo extraordinario</option><option>Reserva de área común</option></select></label>
-        <div class="form-grid"><label>Monto<input type="text" value="320.00" /></label><label>Fecha<input type="date" value="2026-09-17" /></label></div>
-        <label>Número de operación<input type="text" placeholder="Ej. 45872196" /></label>
-        <label>Comprobante<div class="upload-zone">Arrastra un archivo o haz clic para seleccionar</div></label>
-        <div class="modal-actions"><button type="button" class="secondary-button" id="modalCancel">Cancelar</button><button type="submit" class="primary-button">Guardar simulación</button></div>
-      </form>
-    </div>
-  </div>
-
+  <div class="modal-backdrop" id="modalBackdrop" hidden><div class="modal" role="dialog" aria-modal="true"><button class="modal-close" id="modalClose">×</button><span class="eyebrow">Prototipo interactivo</span><h2 id="modalTitle">Registrar pago</h2><p id="modalDescription"></p><form id="modalForm"><div id="dynamicForm"></div><div class="modal-actions"><button type="button" class="secondary-button" id="modalCancel">Cancelar</button><button type="submit" class="primary-button">Guardar simulación</button></div></form></div></div>
   <div class="toast" id="toast" role="status">Operación simulada correctamente.</div>
   <script src="js/app.js"></script>
 </body>
