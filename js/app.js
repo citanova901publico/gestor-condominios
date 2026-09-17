@@ -53,6 +53,78 @@ function allowedFor(item, role){
   return allowed==='all' || allowed.split(' ').includes(role);
 }
 
+function configureSupervisorVisitFilter(role){
+  const visitsSection=document.getElementById('visitas');
+  const visitsTable=visitsSection?.querySelector('.visits-table');
+  if(!visitsSection || !visitsTable) return;
+
+  const visitRows=[...visitsTable.querySelectorAll('.data-row:not(.data-header)')];
+  const sampleDepartments=['704','302','1105','204','806','1201'];
+
+  visitRows.forEach((row,index)=>{
+    if(!row.dataset.department) row.dataset.department=sampleDepartments[index%sampleDepartments.length];
+    const firstCell=row.querySelector('span');
+    if(firstCell && !firstCell.querySelector('.department-tag')){
+      const tag=document.createElement('small');
+      tag.className='department-tag';
+      tag.textContent=`Dpto. ${row.dataset.department}`;
+      firstCell.appendChild(tag);
+    }
+  });
+
+  let filterBar=document.getElementById('supervisorVisitFilter');
+  if(!filterBar){
+    filterBar=document.createElement('div');
+    filterBar.id='supervisorVisitFilter';
+    filterBar.className='supervisor-visit-filter hidden';
+    filterBar.innerHTML=`
+      <div>
+        <span class="eyebrow">Filtro de supervisión</span>
+        <strong>Visitas autorizadas por departamento</strong>
+        <small>Consulta únicamente las autorizaciones de una unidad dentro de tu ámbito.</small>
+      </div>
+      <label>
+        Departamento
+        <select id="departmentVisitFilter">
+          <option value="all">Todos los departamentos</option>
+        </select>
+      </label>`;
+    visitsTable.parentElement.insertBefore(filterBar,visitsTable);
+  }
+
+  const select=document.getElementById('departmentVisitFilter');
+  const departments=[...new Set(visitRows.map(row=>row.dataset.department))].sort((a,b)=>Number(a)-Number(b));
+  if(select && select.options.length===1){
+    departments.forEach(department=>{
+      const option=document.createElement('option');
+      option.value=department;
+      option.textContent=`Dpto. ${department}`;
+      select.appendChild(option);
+    });
+  }
+
+  const isSupervisor=role==='supervisor';
+  filterBar.classList.toggle('hidden',!isSupervisor);
+
+  if(!isSupervisor){
+    if(select) select.value='all';
+    visitRows.forEach(row=>row.style.display='');
+    return;
+  }
+
+  if(select && !select.dataset.bound){
+    select.addEventListener('change',()=>{
+      const selected=select.value;
+      visitRows.forEach(row=>{
+        row.style.display=selected==='all'||row.dataset.department===selected ? '' : 'none';
+      });
+      const label=selected==='all'?'Todos los departamentos':`Dpto. ${selected}`;
+      showToast(`Filtro de visitas: ${label}.`);
+    });
+    select.dataset.bound='true';
+  }
+}
+
 function applyRole(role){
   const config=roles[role];
   document.body.classList.toggle('admin-mode',config.admin);
@@ -88,6 +160,7 @@ function applyRole(role){
     contextAction.dataset.modal='comunicado';
     quickActions.innerHTML='<button data-view-target="pagos"><span>✓</span><strong>Validar pagos</strong><small>18 comprobantes pendientes</small></button><button data-view-target="estructura"><span>▦</span><strong>Gestionar unidades</strong><small>Edificios y residentes</small></button><button data-view-target="incidencias"><span>!</span><strong>Atender incidencias</strong><small>12 casos abiertos</small></button><button data-view-target="reportes"><span>▥</span><strong>Ver reportes</strong><small>Indicadores de gestión</small></button>';
   }
+  configureSupervisorVisitFilter(role);
   bindViewTargets();
   showView('dashboard');
   showToast(`Vista cambiada a ${config.detail}.`);
