@@ -165,22 +165,25 @@
 
       <section class="view" id="cargos">
         <div class="section-toolbar">
-          <div><span class="eyebrow">Finanzas</span><h2>Conceptos, cargos y distribución</h2><p>Configura cada concepto con su propia periodicidad y regla de distribución.</p></div>
-          <button class="primary-button" data-modal="concepto">+ Nuevo concepto</button>
+          <div><span class="eyebrow">Finanzas</span><h2>Conceptos, cargos y distribución</h2><p>Configura cada concepto con su propia periodicidad, regla de distribución y estado.</p></div>
+          <div class="toolbar-actions">
+            <button class="secondary-button admin-receipt-action hidden" data-modal="recibos">Generar recibos</button>
+            <button class="primary-button" data-modal="concepto">+ Nuevo concepto</button>
+          </div>
         </div>
         <div class="stats-grid compact concept-summary">
-          <article class="stat-card"><div><span>Conceptos activos</span><strong>8</strong><small>Ordinarios y extraordinarios</small></div></article>
-          <article class="stat-card"><div><span>Recurrentes</span><strong>5</strong><small>Se replican por período</small></div></article>
+          <article class="stat-card"><div><span>Conceptos activos</span><strong>7</strong><small>Disponibles para nuevos cargos</small></div></article>
+          <article class="stat-card"><div><span>Conceptos inactivos</span><strong>1</strong><small>Solo consulta histórica</small></div></article>
           <article class="stat-card"><div><span>Fraccionados</span><strong>1</strong><small>Cuota vigente 3 de 6</small></div></article>
         </div>
         <article class="panel concept-panel">
           <div class="panel-heading"><div><span class="eyebrow">Configuración</span><h3>Conceptos de gasto</h3></div><span class="badge info">Reglas independientes</span></div>
           <div class="data-table concept-table">
-            <div class="data-row data-header"><span>Concepto</span><span>Periodicidad</span><span>Distribución</span><span>Referencia</span><span>Estado</span></div>
-            <div class="data-row"><span><strong>Administración / portería y limpieza</strong><small>Gasto ordinario</small></span><span><i class="badge neutral">Recurrente</i></span><span>Partes iguales</span><span>Cada mes</span><span><i class="badge success">Activo</i></span></div>
-            <div class="data-row"><span><strong>Fondo de contingencia</strong><small>Reserva para emergencias</small></span><span><i class="badge neutral">Recurrente</i></span><span>Partes iguales</span><span>Cada mes</span><span><i class="badge success">Activo</i></span></div>
-            <div class="data-row"><span><strong>Cuota extraordinaria para cámaras</strong><small>Mejora del edificio</small></span><span><i class="badge info">Fraccionado</i></span><span>Por m²</span><span><strong>3 de 6</strong></span><span><i class="badge success">Activo</i></span></div>
-            <div class="data-row"><span><strong>Reparación extraordinaria</strong><small>Obra puntual</small></span><span><i class="badge warning">Pago único</i></span><span>Por m²</span><span>Sep 2026</span><span><i class="badge success">Activo</i></span></div>
+            <div class="data-row data-header"><span>Concepto</span><span>Periodicidad</span><span>Distribución</span><span>Referencia</span><span>Estado</span><span>Acción</span></div>
+            <div class="data-row"><span><strong>Administración / portería y limpieza</strong><small>Gasto ordinario</small></span><span><i class="badge neutral">Recurrente</i></span><span>Partes iguales</span><span>Cada mes</span><span><i class="badge success concept-status">Activo</i></span><span class="concept-actions"><button class="text-button prototype-action">Editar</button><button class="text-button concept-toggle" data-state="active">Inactivar</button></span></div>
+            <div class="data-row"><span><strong>Fondo de contingencia</strong><small>Reserva para emergencias</small></span><span><i class="badge neutral">Recurrente</i></span><span>Partes iguales</span><span>Cada mes</span><span><i class="badge success concept-status">Activo</i></span><span class="concept-actions"><button class="text-button prototype-action">Editar</button><button class="text-button concept-toggle" data-state="active">Inactivar</button></span></div>
+            <div class="data-row"><span><strong>Cuota extraordinaria para cámaras</strong><small>Mejora del edificio</small></span><span><i class="badge info">Fraccionado</i></span><span>Por m²</span><span><strong>3 de 6</strong></span><span><i class="badge success concept-status">Activo</i></span><span class="concept-actions"><button class="text-button prototype-action">Editar</button><button class="text-button concept-toggle" data-state="active">Inactivar</button></span></div>
+            <div class="data-row"><span><strong>Reparación extraordinaria</strong><small>Obra puntual cerrada</small></span><span><i class="badge warning">Pago único</i></span><span>Por m²</span><span>Jul 2026</span><span><i class="badge neutral concept-status">Inactivo</i></span><span class="concept-actions"><button class="text-button prototype-action">Editar</button><button class="text-button concept-toggle" data-state="inactive">Activar</button></span></div>
           </div>
         </article>
         <article class="panel">
