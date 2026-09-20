@@ -111,7 +111,14 @@
     <main class="main-content">
       <header class="topbar">
         <div class="topbar-left"><button class="mobile-menu" id="mobileMenu">☰</button><div><span class="eyebrow" id="contextLabel">Mi residencia</span><h1 id="pageTitle">Dashboard</h1></div></div>
-        <div class="topbar-actions"><button class="icon-button notification-button" id="notificationButton">♢<span class="notification-dot"></span></button><button class="primary-button" id="contextAction">+ Registrar pago</button></div>
+        <div class="topbar-actions">
+          <div class="context-switcher hidden" id="contextSwitcher" aria-label="Contexto de información">
+            <label id="buildingContextField"><span>Edificio</span><select id="contextBuildingSelect" aria-label="Seleccionar edificio"></select></label>
+            <label id="unitContextField"><span>Departamento</span><select id="contextUnitSelect" aria-label="Seleccionar departamento"></select></label>
+          </div>
+          <button class="icon-button notification-button" id="notificationButton">♢<span class="notification-dot"></span></button>
+          <button class="primary-button" id="contextAction">+ Registrar pago</button>
+        </div>
       </header>
 
       <section class="view active" id="dashboard">
