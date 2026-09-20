@@ -11,7 +11,68 @@
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/extended.css" />
 </head>
-<body>
+<body class="auth-locked">
+
+  <section class="login-screen" id="loginScreen" aria-labelledby="loginTitle">
+    <div class="login-visual">
+      <div class="login-brand"><div class="brand-mark">CH</div><div><strong>CondoHub</strong><span>Gestión residencial</span></div></div>
+      <div class="login-copy">
+        <span class="eyebrow">Gestión simple y segura</span>
+        <h1>Tu condominio, en un solo lugar.</h1>
+        <p>Consulta pagos, reservas, visitas, incidencias y comunicaciones desde cualquier dispositivo.</p>
+        <div class="login-feature-list">
+          <span>✓ Información centralizada</span>
+          <span>✓ Acceso según tu perfil</span>
+          <span>✓ Historial y trazabilidad</span>
+        </div>
+      </div>
+    </div>
+    <div class="login-panel">
+      <div class="login-card">
+        <div class="login-card-head">
+          <span class="eyebrow">Bienvenido</span>
+          <h2 id="loginTitle">Ingresa a tu cuenta</h2>
+          <p>Utiliza el correo registrado en tu condominio.</p>
+        </div>
+        <form id="passwordLoginForm" class="login-form">
+          <label>Correo electrónico
+            <input id="loginEmail" type="email" autocomplete="username" placeholder="nombre@correo.com" required>
+          </label>
+          <label>Contraseña
+            <div class="password-field">
+              <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Ingresa tu contraseña" required>
+              <button type="button" id="togglePassword" aria-label="Mostrar u ocultar contraseña">Ver</button>
+            </div>
+          </label>
+          <button class="primary-button login-submit" type="submit">Ingresar</button>
+        </form>
+
+        <div class="login-divider"><span>o</span></div>
+
+        <button class="token-access-button" id="requestTokenButton" type="button">
+          <strong>No recuerdo mi contraseña</strong>
+          <span>Enviar token temporal a mi correo</span>
+        </button>
+
+        <div class="token-panel hidden" id="tokenPanel">
+          <div class="token-message">
+            <strong>Token temporal enviado</strong>
+            <span id="tokenDestination">Revisa tu correo para continuar.</span>
+          </div>
+          <form id="tokenLoginForm" class="login-form">
+            <label>Token temporal
+              <input id="temporaryToken" type="text" inputmode="numeric" maxlength="6" placeholder="6 dígitos" required>
+            </label>
+            <button class="primary-button login-submit" type="submit">Validar token e ingresar</button>
+            <button class="text-button token-back" id="backToPassword" type="button">Volver a contraseña</button>
+          </form>
+          <div class="prototype-token-note">Prototipo: token de prueba <strong>482731</strong> · vigencia simulada: 5 minutos.</div>
+        </div>
+
+        <p class="login-security-note">El token temporal es de un solo uso y se invalida después de utilizarse o al finalizar su vigencia.</p>
+      </div>
+    </div>
+  </section>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
       <div class="brand"><div class="brand-mark">CH</div><div><strong>CondoHub</strong><span>Gestión residencial</span></div></div>
