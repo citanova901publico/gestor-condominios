@@ -382,6 +382,8 @@ document.addEventListener('click',e=>{
   }
 });
 
+let activeModalType = null;
+
 const forms={
   pago:{title:'Registrar pago',description:'Adjunta la evidencia y registra los datos de la operación. El pago quedará pendiente de validación.',html:`<label>Concepto<select><option>Mantenimiento septiembre</option><option>Fondo extraordinario</option><option>Reserva de área común</option></select></label><div class="form-row"><label>Monto<input value="320.00"></label><label>Fecha<input type="date" value="2026-09-17"></label></div><label>Medio de pago<select><option>Transferencia bancaria</option><option>Yape / Plin</option><option>Depósito</option></select></label><label>Número de operación<input placeholder="Ej. 45872196"></label><label>Comprobante<div class="upload-zone">Arrastra un archivo o haz clic para seleccionar</div></label><label>Observaciones<textarea placeholder="Comentario opcional"></textarea></label>`},
   reserva:{title:'Nueva reserva',description:'El sistema validará disponibilidad, horario, capacidad, anticipación y costo.',html:`<label>Área común<select><option>Sala Cowork</option><option>Sala SUM</option><option>Sala de niños</option></select></label><div class="form-row"><label>Fecha<input type="date" value="2026-09-20"></label><label>Horario<select><option>19:00 – 21:00</option><option>17:00 – 19:00</option></select></label></div><label>Número de asistentes<input type="number" value="4"></label><div class="inline-note">La disponibilidad y las reglas se validarán antes de confirmar. Algunas áreas requieren aprobación o pago.</div>`},
@@ -392,9 +394,41 @@ const forms={
 
 function openModal(type='pago',space=''){
   const f=forms[type]||forms.pago;
+  activeModalType=type;
   modalTitle.textContent=space ? `Reservar ${space}` : f.title;
   modalDescription.textContent=f.description;
   dynamicForm.innerHTML=f.html;
+
+  if(type==='reserva' && roleSelect?.value==='propietario'){
+    dynamicForm.insertAdjacentHTML('beforeend',`
+      <section class="guest-list-options">
+        <div class="guest-list-heading">
+          <div>
+            <span class="eyebrow">Opcional</span>
+            <strong>Lista de invitados</strong>
+            <small>Puedes agregarla ahora o completar esta información posteriormente desde el detalle de la reserva.</small>
+          </div>
+          <span class="badge neutral">No obligatorio</span>
+        </div>
+        <div class="guest-entry-tabs" role="group" aria-label="Forma de registrar invitados">
+          <button type="button" class="guest-entry-tab active" data-guest-mode="manual">Ingresar lista</button>
+          <button type="button" class="guest-entry-tab" data-guest-mode="file">Adjuntar documento</button>
+        </div>
+        <div class="guest-entry-panel" data-guest-panel="manual">
+          <label>Invitados
+            <textarea id="reservationGuestList" placeholder="Ej. Andrea Torres - DNI 12345678&#10;José Ramírez - DNI 87654321"></textarea>
+          </label>
+          <small class="field-help">Un invitado por línea. En la versión productiva podrá validarse y estructurarse esta información.</small>
+        </div>
+        <div class="guest-entry-panel hidden" data-guest-panel="file">
+          <label>Documento con lista de invitados
+            <input id="reservationGuestFile" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt">
+          </label>
+          <small class="field-help">Formatos de ejemplo: PDF, Word, Excel, CSV o texto. El archivo puede adjuntarse también después de crear la reserva.</small>
+        </div>
+      </section>`);
+  }
+
   if(space){const select=dynamicForm.querySelector('select');if(select) select.innerHTML=`<option>${space}</option>`;}
   modalBackdrop.hidden=false;
   document.body.style.overflow='hidden';
@@ -411,8 +445,14 @@ document.addEventListener('click',e=>{
   if(proto) showToast('Acción disponible como parte del prototipo visual.');
   const approve=e.target.closest('.approve');
   const reject=e.target.closest('.reject');
+  const guestTab=e.target.closest('.guest-entry-tab');
   if(approve) showToast('Pago validado en la simulación.');
   if(reject) showToast('Pago observado en la simulación.');
+  if(guestTab){
+    const mode=guestTab.dataset.guestMode;
+    document.querySelectorAll('.guest-entry-tab').forEach(tab=>tab.classList.toggle('active',tab===guestTab));
+    document.querySelectorAll('[data-guest-panel]').forEach(panel=>panel.classList.toggle('hidden',panel.dataset.guestPanel!==mode));
+  }
 });
 
 contextAction?.addEventListener('click',()=>openModal(contextAction.dataset.modal||'pago'));
@@ -420,7 +460,17 @@ modalClose?.addEventListener('click',closeModal);
 modalCancel?.addEventListener('click',closeModal);
 modalBackdrop?.addEventListener('click',e=>{if(e.target===modalBackdrop) closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modalBackdrop.hidden) closeModal();});
-modalForm?.addEventListener('submit',e=>{e.preventDefault();closeModal();showToast('Registro guardado en la simulación.');});
+modalForm?.addEventListener('submit',e=>{
+  e.preventDefault();
+  const reservationForOwner=activeModalType==='reserva' && roleSelect?.value==='propietario';
+  closeModal();
+  if(reservationForOwner){
+    showToast('Reserva registrada. La lista de invitados puede completarse ahora o posteriormente.');
+  } else {
+    showToast('Registro guardado en la simulación.');
+  }
+  activeModalType=null;
+});
 
 document.querySelectorAll('.filter').forEach(button=>button.addEventListener('click',()=>{button.parentElement.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));button.classList.add('active');showToast(`Filtro “${button.textContent.trim()}” aplicado.`);}));
 
