@@ -237,6 +237,13 @@ const contextScopes = {
       {id:'torre-b',name:'Torre B',collection:'S/ 31,640',payments:'6',incidents:'4',reservations:'14'},
       {id:'torre-c',name:'Torre C',collection:'S/ 10,800',payments:'4',incidents:'3',reservations:'8'}
     ]
+  },
+  administrador:{
+    buildings:[
+      {id:'torre-a',name:'Torre A',collection:'S/ 42,180',payments:'8',incidents:'5',reservations:'19'},
+      {id:'torre-b',name:'Torre B',collection:'S/ 31,640',payments:'6',incidents:'4',reservations:'14'},
+      {id:'torre-c',name:'Torre C',collection:'S/ 10,800',payments:'4',incidents:'3',reservations:'8'}
+    ]
   }
 };
 
@@ -289,11 +296,26 @@ function updateContextDisplay(role){
     if(cards?.[2]?.querySelector('strong')) cards[2].querySelector('strong').textContent=building.incidents;
     if(cards?.[3]?.querySelector('strong')) cards[3].querySelector('strong').textContent=building.reservations;
     financeAmount.textContent=building.collection;
+  } else if(role==='administrador'){
+    const scope=contextScopes.administrador;
+    const building=scope.buildings.find(x=>x.id===contextBuildingSelect.value) || scope.buildings[0];
+    profileRole.textContent=`Administrador · ${building.name}`;
+    contextLabel.textContent=`Administración · ${building.name}`;
+    const title=adminWelcome?.querySelector('h2');
+    const copy=adminWelcome?.querySelector('p');
+    if(title) title.textContent=`Residencial Central · ${building.name}`;
+    if(copy) copy.textContent=`Configuración y operación del edificio seleccionado: ${building.name}. Todas las opciones del menú utilizan este contexto.`;
+    const cards=adminStats?.querySelectorAll('.stat-card');
+    if(cards?.[0]?.querySelector('strong')) cards[0].querySelector('strong').textContent=building.collection;
+    if(cards?.[1]?.querySelector('strong')) cards[1].querySelector('strong').textContent=building.payments;
+    if(cards?.[2]?.querySelector('strong')) cards[2].querySelector('strong').textContent=building.incidents;
+    if(cards?.[3]?.querySelector('strong')) cards[3].querySelector('strong').textContent=building.reservations;
+    financeAmount.textContent=building.collection;
   }
 }
 
 function configureContextSelector(role){
-  const supportsContext=role==='propietario'||role==='supervisor';
+  const supportsContext=role==='propietario'||role==='supervisor'||role==='administrador';
   contextSwitcher?.classList.toggle('hidden',!supportsContext);
   if(!supportsContext) return;
 
@@ -401,6 +423,12 @@ function openModal(type='pago',space=''){
   modalTitle.textContent=space ? `Reservar ${space}` : f.title;
   modalDescription.textContent=f.description;
   dynamicForm.innerHTML=f.html;
+
+  if(type==='recibos' && roleSelect?.value==='administrador'){
+    const receiptBuilding=dynamicForm.querySelector('select');
+    const buildingIndex=contextScopes.administrador.buildings.findIndex(x=>x.id===contextBuildingSelect?.value);
+    if(receiptBuilding && buildingIndex>=0) receiptBuilding.selectedIndex=buildingIndex;
+  }
 
   if(type==='reserva' && roleSelect?.value==='propietario'){
     dynamicForm.insertAdjacentHTML('beforeend',`
