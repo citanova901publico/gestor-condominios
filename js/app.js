@@ -389,7 +389,8 @@ const forms={
   reserva:{title:'Nueva reserva',description:'El sistema validará disponibilidad, horario, capacidad, anticipación y costo.',html:`<label>Área común<select><option>Sala Cowork</option><option>Sala SUM</option><option>Sala de niños</option></select></label><div class="form-row"><label>Fecha<input type="date" value="2026-09-20"></label><label>Horario<select><option>19:00 – 21:00</option><option>17:00 – 19:00</option></select></label></div><label>Número de asistentes<input type="number" value="4"></label><div class="inline-note">La disponibilidad y las reglas se validarán antes de confirmar. Algunas áreas requieren aprobación o pago.</div>`},
   visita:{title:'Autorizar visita',description:'Registra una visita única o recurrente asociada a tu unidad.',html:`<label>Nombre completo<input placeholder="Nombre del invitado"></label><label>Documento<input placeholder="DNI / CE / Pasaporte"></label><div class="form-row"><label>Tipo<select><option>Visita única</option><option>Recurrente</option></select></label><label>Fecha<input type="date" value="2026-09-18"></label></div><div class="form-row"><label>Desde<input type="time" value="18:00"></label><label>Hasta<input type="time" value="22:00"></label></div><label>Observaciones<textarea placeholder="Indicaciones para recepción"></textarea></label>`},
   incidencia:{title:'Nueva incidencia',description:'Registra categoría, prioridad, descripción y evidencia para iniciar el flujo de atención.',html:`<div class="form-row"><label>Categoría<select><option>Mantenimiento</option><option>Seguridad</option><option>Limpieza</option><option>Administración</option></select></label><label>Prioridad<select><option>Media</option><option>Alta</option><option>Baja</option></select></label></div><label>Descripción<textarea placeholder="Describe el problema"></textarea></label><label>Evidencia<div class="upload-zone">Adjuntar foto o documento</div></label>`},
-  comunicado:{title:'Publicar comunicado',description:'Crea una comunicación segmentada según perfil o alcance.',html:`<label>Título<input placeholder="Título del comunicado"></label><label>Audiencia<select><option>Todo el condominio</option><option>Propietarios</option><option>Inquilinos</option><option>Torre A</option></select></label><label>Mensaje<textarea placeholder="Contenido"></textarea></label><div class="inline-note">En una versión productiva este evento podrá disparar notificaciones internas y canales externos configurados.</div>`}
+  comunicado:{title:'Publicar comunicado',description:'Crea una comunicación segmentada según perfil o alcance.',html:`<label>Título<input placeholder="Título del comunicado"></label><label>Audiencia<select><option>Todo el condominio</option><option>Propietarios</option><option>Inquilinos</option><option>Torre A</option></select></label><label>Mensaje<textarea placeholder="Contenido"></textarea></label><div class="inline-note">En una versión productiva este evento podrá disparar notificaciones internas y canales externos configurados.</div>`},
+  concepto:{title:'Nuevo concepto de gasto',description:'Configura la periodicidad y la forma de distribuir este concepto sin afectar las reglas de otros gastos.',html:`<label>Nombre del concepto<input placeholder="Ej. Cuota extraordinaria para cámaras"></label><div class="form-row"><label>Periodicidad<select id="conceptFrequency"><option value="recurrente">Pago recurrente</option><option value="unico">Pago único</option><option value="fraccionado">Pago fraccionado en N cuotas</option></select></label><label>Regla de distribución<select><option>Por unidad en partes iguales</option><option>Proporcional por metros cuadrados</option></select></label></div><div class="form-row concept-installments hidden" id="conceptInstallments"><label>Número total de cuotas<input type="number" min="2" value="6"></label><label>Cuota vigente<input type="number" min="1" value="3"></label></div><label>Importe total del concepto<input type="number" step="0.01" placeholder="0.00"></label><label>Periodo de inicio<input type="month" value="2026-09"></label><div class="inline-note">La periodicidad y la regla de distribución se aplican únicamente a este concepto.</div>`}
 };
 
 function openModal(type='pago',space=''){
@@ -446,12 +447,16 @@ document.addEventListener('click',e=>{
   const approve=e.target.closest('.approve');
   const reject=e.target.closest('.reject');
   const guestTab=e.target.closest('.guest-entry-tab');
+  const frequency=e.target.closest('#conceptFrequency');
   if(approve) showToast('Pago validado en la simulación.');
   if(reject) showToast('Pago observado en la simulación.');
   if(guestTab){
     const mode=guestTab.dataset.guestMode;
     document.querySelectorAll('.guest-entry-tab').forEach(tab=>tab.classList.toggle('active',tab===guestTab));
     document.querySelectorAll('[data-guest-panel]').forEach(panel=>panel.classList.toggle('hidden',panel.dataset.guestPanel!==mode));
+  }
+  if(frequency){
+    document.getElementById('conceptInstallments')?.classList.toggle('hidden',frequency.value!=='fraccionado');
   }
 });
 
