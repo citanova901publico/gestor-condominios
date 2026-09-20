@@ -115,6 +115,10 @@ const financePanelTitle = document.getElementById('financePanelTitle');
 const financeAmount = document.getElementById('financeAmount');
 const financeCaption = document.getElementById('financeCaption');
 const quickActions = document.getElementById('quickActions');
+const contextSwitcher = document.getElementById('contextSwitcher');
+const contextBuildingSelect = document.getElementById('contextBuildingSelect');
+const contextUnitSelect = document.getElementById('contextUnitSelect');
+const unitContextField = document.getElementById('unitContextField');
 
 const titles = {
   dashboard:'Dashboard', cuenta:'Estado de cuenta', pagos:'Pagos y evidencias', reservas:'Reservas', visitas:'Visitas', incidencias:'Incidencias', comunicados:'Comunicados', estructura:'Condominios y unidades', usuarios:'Usuarios y perfiles', cargos:'Cargos y multas', documentos:'Documentos', reportes:'Reportes', auditoria:'Auditoría'
@@ -215,6 +219,110 @@ function configureSupervisorVisitFilter(role){
   }
 }
 
+const contextScopes = {
+  propietario:{
+    buildings:[
+      {id:'torre-a',name:'Torre A',units:[
+        {id:'704',name:'Dpto. 704',balance:'S/ 385.00',reservation:'Sala Cowork',reservationDate:'20 sep · 7:00 p. m.'},
+        {id:'1202',name:'Dpto. 1202',balance:'S/ 0.00',reservation:'Sin reservas',reservationDate:'Sin próximas reservas'}
+      ]},
+      {id:'torre-b',name:'Torre B',units:[
+        {id:'305',name:'Dpto. 305',balance:'S/ 710.00',reservation:'Sala SUM',reservationDate:'27 sep · 6:00 p. m.'}
+      ]}
+    ]
+  },
+  supervisor:{
+    buildings:[
+      {id:'torre-a',name:'Torre A',collection:'S/ 42,180',payments:'8',incidents:'5',reservations:'19'},
+      {id:'torre-b',name:'Torre B',collection:'S/ 31,640',payments:'6',incidents:'4',reservations:'14'},
+      {id:'torre-c',name:'Torre C',collection:'S/ 10,800',payments:'4',incidents:'3',reservations:'8'}
+    ]
+  }
+};
+
+function fillSelect(select,items){
+  if(!select) return;
+  select.innerHTML='';
+  items.forEach(item=>{
+    const option=document.createElement('option');
+    option.value=item.id;
+    option.textContent=item.name;
+    select.appendChild(option);
+  });
+}
+
+function updateContextDisplay(role){
+  if(role==='propietario'){
+    const scope=contextScopes.propietario;
+    const building=scope.buildings.find(x=>x.id===contextBuildingSelect.value) || scope.buildings[0];
+    const unit=building.units.find(x=>x.id===contextUnitSelect.value) || building.units[0];
+    profileRole.textContent=`Propietario · ${building.name} · ${unit.name}`;
+    contextLabel.textContent=`Mi residencia · ${building.name}`;
+    const eyebrow=residentWelcome?.querySelector('.eyebrow');
+    if(eyebrow) eyebrow.textContent=`Resumen de ${unit.name} · ${building.name}`;
+    const cards=residentStats?.querySelectorAll('.stat-card');
+    if(cards?.[0]){
+      const strong=cards[0].querySelector('strong');
+      const small=cards[0].querySelector('small');
+      if(strong) strong.textContent=unit.balance;
+      if(small) small.textContent=unit.balance==='S/ 0.00'?'Sin deuda pendiente':'Vence el 25 de septiembre';
+    }
+    if(cards?.[1]){
+      const strong=cards[1].querySelector('strong');
+      const small=cards[1].querySelector('small');
+      if(strong) strong.textContent=unit.reservation;
+      if(small) small.textContent=unit.reservationDate;
+    }
+    financeAmount.textContent=unit.balance==='S/ 0.00'?'S/ 1,805.00':'S/ 1,420.00';
+  } else if(role==='supervisor'){
+    const scope=contextScopes.supervisor;
+    const building=scope.buildings.find(x=>x.id===contextBuildingSelect.value) || scope.buildings[0];
+    profileRole.textContent=`Supervisor · ${building.name}`;
+    contextLabel.textContent=`Supervisión · ${building.name}`;
+    const title=adminWelcome?.querySelector('h2');
+    const copy=adminWelcome?.querySelector('p');
+    if(title) title.textContent=`Residencial Central · ${building.name}`;
+    if(copy) copy.textContent=`Seguimiento de cobranza, reservas, incidencias y validaciones del ámbito seleccionado: ${building.name}.`;
+    const cards=adminStats?.querySelectorAll('.stat-card');
+    if(cards?.[0]?.querySelector('strong')) cards[0].querySelector('strong').textContent=building.collection;
+    if(cards?.[1]?.querySelector('strong')) cards[1].querySelector('strong').textContent=building.payments;
+    if(cards?.[2]?.querySelector('strong')) cards[2].querySelector('strong').textContent=building.incidents;
+    if(cards?.[3]?.querySelector('strong')) cards[3].querySelector('strong').textContent=building.reservations;
+    financeAmount.textContent=building.collection;
+  }
+}
+
+function configureContextSelector(role){
+  const supportsContext=role==='propietario'||role==='supervisor';
+  contextSwitcher?.classList.toggle('hidden',!supportsContext);
+  if(!supportsContext) return;
+
+  const scope=contextScopes[role];
+  fillSelect(contextBuildingSelect,scope.buildings);
+  unitContextField?.classList.toggle('hidden',role!=='propietario');
+
+  if(role==='propietario'){
+    const building=scope.buildings[0];
+    fillSelect(contextUnitSelect,building.units);
+  }
+  updateContextDisplay(role);
+}
+
+contextBuildingSelect?.addEventListener('change',()=>{
+  const role=roleSelect.value;
+  if(role==='propietario'){
+    const building=contextScopes.propietario.buildings.find(x=>x.id===contextBuildingSelect.value);
+    fillSelect(contextUnitSelect,building?.units||[]);
+  }
+  updateContextDisplay(role);
+  showToast('Contexto de información actualizado.');
+});
+
+contextUnitSelect?.addEventListener('change',()=>{
+  updateContextDisplay(roleSelect.value);
+  showToast('Departamento seleccionado actualizado.');
+});
+
 function applyRole(role){
   const config=roles[role];
   document.body.classList.toggle('admin-mode',config.admin);
@@ -251,6 +359,7 @@ function applyRole(role){
     quickActions.innerHTML='<button data-view-target="pagos"><span>✓</span><strong>Validar pagos</strong><small>18 comprobantes pendientes</small></button><button data-view-target="estructura"><span>▦</span><strong>Gestionar unidades</strong><small>Edificios y residentes</small></button><button data-view-target="incidencias"><span>!</span><strong>Atender incidencias</strong><small>12 casos abiertos</small></button><button data-view-target="reportes"><span>▥</span><strong>Ver reportes</strong><small>Indicadores de gestión</small></button>';
   }
   configureSupervisorVisitFilter(role);
+  configureContextSelector(role);
   bindViewTargets();
   showView('dashboard');
   showToast(`Vista cambiada a ${config.detail}.`);
