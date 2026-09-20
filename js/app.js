@@ -336,6 +336,7 @@ function applyRole(role){
     item.classList.toggle('role-hidden',!allowed);
     item.style.display=allowed ? '' : 'none';
   });
+  document.querySelectorAll('.admin-receipt-action').forEach(button=>button.classList.toggle('hidden',role!=='administrador'));
 
   const isResident=role==='propietario'||role==='inquilino';
   residentWelcome.classList.toggle('hidden',!isResident);
@@ -390,7 +391,8 @@ const forms={
   visita:{title:'Autorizar visita',description:'Registra una visita única o recurrente asociada a tu unidad.',html:`<label>Nombre completo<input placeholder="Nombre del invitado"></label><label>Documento<input placeholder="DNI / CE / Pasaporte"></label><div class="form-row"><label>Tipo<select><option>Visita única</option><option>Recurrente</option></select></label><label>Fecha<input type="date" value="2026-09-18"></label></div><div class="form-row"><label>Desde<input type="time" value="18:00"></label><label>Hasta<input type="time" value="22:00"></label></div><label>Observaciones<textarea placeholder="Indicaciones para recepción"></textarea></label>`},
   incidencia:{title:'Nueva incidencia',description:'Registra categoría, prioridad, descripción y evidencia para iniciar el flujo de atención.',html:`<div class="form-row"><label>Categoría<select><option>Mantenimiento</option><option>Seguridad</option><option>Limpieza</option><option>Administración</option></select></label><label>Prioridad<select><option>Media</option><option>Alta</option><option>Baja</option></select></label></div><label>Descripción<textarea placeholder="Describe el problema"></textarea></label><label>Evidencia<div class="upload-zone">Adjuntar foto o documento</div></label>`},
   comunicado:{title:'Publicar comunicado',description:'Crea una comunicación segmentada según perfil o alcance.',html:`<label>Título<input placeholder="Título del comunicado"></label><label>Audiencia<select><option>Todo el condominio</option><option>Propietarios</option><option>Inquilinos</option><option>Torre A</option></select></label><label>Mensaje<textarea placeholder="Contenido"></textarea></label><div class="inline-note">En una versión productiva este evento podrá disparar notificaciones internas y canales externos configurados.</div>`},
-  concepto:{title:'Nuevo concepto de gasto',description:'Configura la periodicidad y la forma de distribuir este concepto sin afectar las reglas de otros gastos.',html:`<label>Nombre del concepto<input placeholder="Ej. Cuota extraordinaria para cámaras"></label><div class="form-row"><label>Periodicidad<select id="conceptFrequency"><option value="recurrente">Pago recurrente</option><option value="unico">Pago único</option><option value="fraccionado">Pago fraccionado en N cuotas</option></select></label><label>Regla de distribución<select><option>Por unidad en partes iguales</option><option>Proporcional por metros cuadrados</option></select></label></div><div class="form-row concept-installments hidden" id="conceptInstallments"><label>Número total de cuotas<input type="number" min="2" value="6"></label><label>Cuota vigente<input type="number" min="1" value="3"></label></div><label>Importe total del concepto<input type="number" step="0.01" placeholder="0.00"></label><label>Periodo de inicio<input type="month" value="2026-09"></label><div class="inline-note">La periodicidad y la regla de distribución se aplican únicamente a este concepto.</div>`}
+  concepto:{title:'Nuevo concepto de gasto',description:'Configura la periodicidad, distribución y estado de este concepto sin afectar las reglas de otros gastos.',html:`<label>Nombre del concepto<input placeholder="Ej. Cuota extraordinaria para cámaras"></label><div class="form-row"><label>Periodicidad<select id="conceptFrequency"><option value="recurrente">Pago recurrente</option><option value="unico">Pago único</option><option value="fraccionado">Pago fraccionado en N cuotas</option></select></label><label>Regla de distribución<select><option>Por unidad en partes iguales</option><option>Proporcional por metros cuadrados</option></select></label></div><div class="form-row concept-installments hidden" id="conceptInstallments"><label>Número total de cuotas<input type="number" min="2" value="6"></label><label>Cuota vigente<input type="number" min="1" value="3"></label></div><div class="form-row"><label>Importe total del concepto<input type="number" step="0.01" placeholder="0.00"></label><label>Estado<select><option>Activo</option><option>Inactivo</option></select></label></div><label>Periodo de inicio<input type="month" value="2026-09"></label><div class="inline-note">Solo los conceptos activos participan en nuevas generaciones de cargos. Los inactivos conservan el histórico.</div>`},
+  recibos:{title:'Generar documentos de recibo',description:'Revisa el período y los conceptos activos antes de generar un documento individual por unidad.',html:`<div class="form-row"><label>Edificio<select><option>Residencial Central - Torre A</option><option>Residencial Central - Torre B</option><option>Residencial Central - Torre C</option></select></label><label>Periodo<input type="month" value="2026-09"></label></div><label>Fecha de vencimiento<input type="date" value="2026-09-25"></label><div class="receipt-review"><div><span>Conceptos activos</span><strong>7</strong></div><div><span>Unidades a procesar</span><strong>48</strong></div><div><span>Documentos a generar</span><strong>48 recibos</strong></div></div><div class="receipt-concepts"><strong>Conceptos incluidos</strong><span>Administración / portería y limpieza</span><span>Fondo de contingencia</span><span>Cuota extraordinaria para cámaras · cuota 3 de 6</span><span>Mantenimientos y servicios aplicables</span></div><div class="inline-note">La generación utilizará solo conceptos activos, respetando periodicidad, cuotas vigentes y regla de distribución de cada concepto. En el producto final quedará trazabilidad del usuario, fecha y período generado.</div>`}
 };
 
 function openModal(type='pago',space=''){
@@ -448,6 +450,7 @@ document.addEventListener('click',e=>{
   const reject=e.target.closest('.reject');
   const guestTab=e.target.closest('.guest-entry-tab');
   const frequency=e.target.closest('#conceptFrequency');
+  const conceptToggle=e.target.closest('.concept-toggle');
   if(approve) showToast('Pago validado en la simulación.');
   if(reject) showToast('Pago observado en la simulación.');
   if(guestTab){
@@ -457,6 +460,19 @@ document.addEventListener('click',e=>{
   }
   if(frequency){
     document.getElementById('conceptInstallments')?.classList.toggle('hidden',frequency.value!=='fraccionado');
+  }
+  if(conceptToggle){
+    const row=conceptToggle.closest('.data-row');
+    const badge=row?.querySelector('.concept-status');
+    const becomingInactive=conceptToggle.dataset.state==='active';
+    conceptToggle.dataset.state=becomingInactive?'inactive':'active';
+    conceptToggle.textContent=becomingInactive?'Activar':'Inactivar';
+    if(badge){
+      badge.textContent=becomingInactive?'Inactivo':'Activo';
+      badge.classList.toggle('success',!becomingInactive);
+      badge.classList.toggle('neutral',becomingInactive);
+    }
+    showToast(becomingInactive?'Concepto inactivado. No generará nuevos cargos.':'Concepto activado para futuras generaciones.');
   }
 });
 
@@ -468,9 +484,12 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modalBackdrop.hidd
 modalForm?.addEventListener('submit',e=>{
   e.preventDefault();
   const reservationForOwner=activeModalType==='reserva' && roleSelect?.value==='propietario';
+  const receiptGeneration=activeModalType==='recibos' && roleSelect?.value==='administrador';
   closeModal();
   if(reservationForOwner){
     showToast('Reserva registrada. La lista de invitados puede completarse ahora o posteriormente.');
+  } else if(receiptGeneration){
+    showToast('48 documentos de recibo generados para el período seleccionado.');
   } else {
     showToast('Registro guardado en la simulación.');
   }
