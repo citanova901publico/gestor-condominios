@@ -1,3 +1,93 @@
+const loginScreen = document.getElementById('loginScreen');
+const passwordLoginForm = document.getElementById('passwordLoginForm');
+const tokenLoginForm = document.getElementById('tokenLoginForm');
+const loginEmail = document.getElementById('loginEmail');
+const loginPassword = document.getElementById('loginPassword');
+const requestTokenButton = document.getElementById('requestTokenButton');
+const tokenPanel = document.getElementById('tokenPanel');
+const temporaryToken = document.getElementById('temporaryToken');
+const tokenDestination = document.getElementById('tokenDestination');
+const backToPassword = document.getElementById('backToPassword');
+const togglePassword = document.getElementById('togglePassword');
+const DEMO_TEMPORARY_TOKEN = '482731';
+let tokenRequestedAt = null;
+
+function validateLoginEmail(){
+  if(!loginEmail?.value || !loginEmail.checkValidity()){
+    loginEmail?.focus();
+    showToast('Ingresa un correo electrónico válido.');
+    return false;
+  }
+  return true;
+}
+
+function completePrototypeLogin(method){
+  document.body.classList.remove('auth-locked');
+  document.body.classList.add('auth-authenticated');
+  loginScreen?.classList.add('hidden');
+  showToast(method === 'token' ? 'Token validado. Acceso concedido.' : 'Inicio de sesión correcto.');
+}
+
+passwordLoginForm?.addEventListener('submit',event=>{
+  event.preventDefault();
+  if(!validateLoginEmail()) return;
+  if(!loginPassword.value.trim()){
+    loginPassword.focus();
+    showToast('Ingresa tu contraseña.');
+    return;
+  }
+  completePrototypeLogin('password');
+});
+
+requestTokenButton?.addEventListener('click',()=>{
+  if(!validateLoginEmail()) return;
+  tokenRequestedAt=Date.now();
+  tokenPanel?.classList.remove('hidden');
+  passwordLoginForm?.classList.add('token-mode-muted');
+  requestTokenButton.classList.add('hidden');
+  if(tokenDestination) tokenDestination.textContent=`Enviamos un token temporal a ${loginEmail.value}.`;
+  temporaryToken?.focus();
+  showToast('Token temporal enviado al correo registrado.');
+});
+
+tokenLoginForm?.addEventListener('submit',event=>{
+  event.preventDefault();
+  if(!tokenRequestedAt){
+    showToast('Solicita primero un token temporal.');
+    return;
+  }
+  const elapsed=Date.now()-tokenRequestedAt;
+  if(elapsed > 5*60*1000){
+    tokenRequestedAt=null;
+    temporaryToken.value='';
+    showToast('El token temporal ha vencido. Solicita uno nuevo.');
+    return;
+  }
+  if(temporaryToken.value.trim() !== DEMO_TEMPORARY_TOKEN){
+    temporaryToken.focus();
+    showToast('El token ingresado no es válido.');
+    return;
+  }
+  tokenRequestedAt=null;
+  temporaryToken.value='';
+  completePrototypeLogin('token');
+});
+
+backToPassword?.addEventListener('click',()=>{
+  tokenPanel?.classList.add('hidden');
+  passwordLoginForm?.classList.remove('token-mode-muted');
+  requestTokenButton?.classList.remove('hidden');
+  temporaryToken.value='';
+  tokenRequestedAt=null;
+  loginPassword?.focus();
+});
+
+togglePassword?.addEventListener('click',()=>{
+  const showing=loginPassword.type === 'text';
+  loginPassword.type=showing ? 'password' : 'text';
+  togglePassword.textContent=showing ? 'Ver' : 'Ocultar';
+});
+
 const views = document.querySelectorAll('.view');
 const navItems = document.querySelectorAll('.nav-item');
 const pageTitle = document.getElementById('pageTitle');
